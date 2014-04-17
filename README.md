@@ -1,7 +1,7 @@
 secxbrl
 =======
 
-This tool helps you download the meta data of XBRL filings from SEC.
+This tool helps you download the meta data (URL, form type, date, CIK, etc.) of XBRL filings from SEC. It can also be used as a data retrieval library for XBRL processing.
 
 To compile (need Ant):
 

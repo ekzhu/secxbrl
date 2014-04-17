@@ -1,10 +1,13 @@
 <ivy-module version="2.0">
-  <info organisation="edu.toronto.cs" module="sec-filing-loader" />
+  <info organisation="edu.toronto.cs" module="secxbrl" />
   <dependencies>
     <dependency org="log4j" name="log4j" rev="1.2.16"/>
-    <!-- <dependency org="commons-configuration" name="commons-configuration" rev="1.10"/> -->
     <dependency org="commons-cli" name="commons-cli" rev="1.2"/>
     <dependency org="org.jsoup" name="jsoup" rev="1.7.3"/>
+    <dependency org="xbrlapi" name="google-api-spelling" rev="1.1">
+      <artifact name="google-api-spelling" type="jar"
+        url="https://google-api-spelling-java.googlecode.com/files/google-api-spelling-java-1.1.jar" />
+    </dependency>
   </dependencies>
 </ivy-module>
  

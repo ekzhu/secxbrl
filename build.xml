@@ -1,4 +1,5 @@
-<project name="sec-filing-loader" default="build">
+<project name="secxbrl" default="build">
+  <!-- Import thte default netbeans build targets -->
   <import file="nbproject/build-impl.xml"/>
 
   <!-- Path to the directory of ivy library -->

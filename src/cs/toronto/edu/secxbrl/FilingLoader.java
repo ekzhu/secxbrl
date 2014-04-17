@@ -33,7 +33,7 @@ public class FilingLoader {
     public List<Filing> getFilings(String yearMonth, String companyCik, String formType) 
             throws IOException, URISyntaxException {
         List<URI> feedUris = getFeedUris(yearMonth);
-        List<Filing> filings = new ArrayList<>();
+        List<Filing> filings = new ArrayList<Filing>();
         for (URI feedUri : feedUris) {
             SECGrabber grabber = new SecGrabberImpl(feedUri);
             List<URI> uris = grabber.getResources();

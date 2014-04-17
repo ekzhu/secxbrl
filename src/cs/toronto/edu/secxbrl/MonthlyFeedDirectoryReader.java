@@ -26,7 +26,7 @@ public class MonthlyFeedDirectoryReader {
     }
     
     public List<URI> getMontlyFilingFeeds(String feedRegex) throws IOException, URISyntaxException {
-        List<URI> feeds = new ArrayList<>();
+        List<URI> feeds = new ArrayList<URI>();
         Document doc = Jsoup.connect(monthlyArchiveUrl).get();
         Elements nodes = doc.select("a");
         for (int i=0; i<nodes.size(); i++) {

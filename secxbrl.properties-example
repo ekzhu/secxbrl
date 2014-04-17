@@ -1,9 +1,0 @@
-exist-db.host=localhost
-exist-db.port=8088
-exist-db.database=xmlrpc/db
-exist-db.username=admin
-exist-db.password=password
-exist-db.parentpath=/
-exist-db.collection=secxbrl
-
-cache-directory=./cache

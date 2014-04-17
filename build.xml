@@ -1,0 +1,21 @@
+<project name="sec-filing-loader" default="build">
+  <import file="nbproject/build-impl.xml"/>
+
+  <!-- Path to the directory of ivy library -->
+  <path id="ivy.lib.path">
+      <fileset dir="ivy" includes="*.jar"/>
+  </path>
+  <!-- Path to the directories of dependencies -->
+  <property name="lib.dir" value="lib"/>
+  <taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpathref="ivy.lib.path"/>
+  <taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpathref="ivy.lib.path"/>
+  <taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpathref="ivy.lib.path"/>
+  <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpathref="ivy.lib.path"/> 
+  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+
+  <!-- Override for ivy retreving dependencies -->
+  <target name="-pre-compile">
+        <ivy-retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar"/>
+  </target>
+
+ </project>

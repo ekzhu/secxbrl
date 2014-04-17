@@ -1,4 +1,4 @@
-package cs.toronto.edu.secxbrl.sec;
+package cs.toronto.edu.secxbrl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,11 +16,8 @@ import org.jsoup.select.Elements;
 public class MonthlyFeedDirectoryReader {
     
     private final String monthlyArchiveUrl;
-    private final String feedFilingNameRegex;
     
-    public MonthlyFeedDirectoryReader(String monthlyArchiveUrl, 
-            String feedFilingNameRegex) {
-        this.feedFilingNameRegex = feedFilingNameRegex;
+    public MonthlyFeedDirectoryReader(String monthlyArchiveUrl) {
         if (! monthlyArchiveUrl.endsWith("/")) {
             this.monthlyArchiveUrl += monthlyArchiveUrl + "/";
         } else {
@@ -28,17 +25,16 @@ public class MonthlyFeedDirectoryReader {
         }
     }
     
-    public List<URI> getMontlyFilingFeeds() throws IOException, URISyntaxException {
+    public List<URI> getMontlyFilingFeeds(String feedRegex) throws IOException, URISyntaxException {
         List<URI> feeds = new ArrayList<>();
         Document doc = Jsoup.connect(monthlyArchiveUrl).get();
         Elements nodes = doc.select("a");
         for (int i=0; i<nodes.size(); i++) {
             String link = nodes.get(i).attr("href");
-            if (link.matches(feedFilingNameRegex)) {
+            if (link.matches(feedRegex)) {
                 feeds.add(new URI(monthlyArchiveUrl+link));
             }
         }
         return feeds;
     }
-
 }

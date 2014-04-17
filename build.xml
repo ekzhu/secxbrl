@@ -1,83 +1,71 @@
-<project name="secxbrl" default="build">
-  <!-- Import thte default netbeans build targets -->
-  <import file="nbproject/build-impl.xml"/>
+<project name="secxbrl" default="dist" basedir=".">
 
   <!-- Path to the directory of ivy library -->
   <path id="ivy.lib.path">
       <fileset dir="ivy" includes="*.jar"/>
   </path>
-  <!-- Path to the directories of dependencies -->
-  <property name="lib.dir" value="lib"/>
   <taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpathref="ivy.lib.path"/>
   <taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpathref="ivy.lib.path"/>
   <taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpathref="ivy.lib.path"/>
   <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpathref="ivy.lib.path"/> 
   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
-  <!-- Override for ivy retreving dependencies -->
-  <target name="-pre-init">
-        <ivy-retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar"/>
+  <!-- set global properties for this build -->
+  <property name="main-class" value="cs.toronto.edu.secxbrl.Main"/>
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib" location="lib"/>
+  <property name="jar.file" value="${dist}/${ant.project.name}.jar"/>
+  <path id="lib.path">    
+      <fileset dir="${lib}">
+          <include name="**/*.jar"/>
+      </fileset>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <!-- <mkdir dir="${lib}" /> -->
+
+    <!-- Resolve dependencies -->
+    <ivy-retrieve pattern="${lib}/[artifact].[ext]" type="jar"/>
   </target>
 
-  <!--
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" >
+      <classpath refid="lib.path"/>
+    </javac>
+  </target>
 
-  There exist several targets which are by default empty and which can be 
-  used for execution of your tasks. These targets are usually executed 
-  before and after some main targets. They are: 
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${build}/lib"/>
+    <copy todir="${build}/lib" flatten="true">
+      <path refid="lib.path" />
+    </copy>
 
-    -pre-init:                 called before initialization of project properties
-    -post-init:                called after initialization of project properties
-    -pre-compile:              called before javac compilation
-    -post-compile:             called after javac compilation
-    -pre-compile-single:       called before javac compilation of single file
-    -post-compile-single:      called after javac compilation of single file
-    -pre-compile-test:         called before javac compilation of JUnit tests
-    -post-compile-test:        called after javac compilation of JUnit tests
-    -pre-compile-test-single:  called before javac compilation of single JUnit test
-    -post-compile-test-single: called after javac compilation of single JUunit test
-    -pre-jar:                  called before JAR building
-    -post-jar:                 called after JAR building
-    -post-clean:               called after cleaning build products
+    <manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+        <classpath refid="lib.path"/>
+    </manifestclasspath>
 
-  (Targets beginning with '-' are not intended to be called on their own.)
+    <jar destfile="${jar.file}" basedir="${build}">
+        <manifest>
+            <attribute name="Main-Class" value="${main-class}"/>
+            <attribute name="Class-Path" value="${manifest.classpath}"/>
+        </manifest>
+    </jar>
+  </target>
 
-  Example of inserting an obfuscator after compilation could look like this:
-
-      <target name="-post-compile">
-          <obfuscate>
-              <fileset dir="${build.classes.dir}"/>
-          </obfuscate>
-      </target>
-
-  For list of available properties check the imported 
-  nbproject/build-impl.xml file. 
-
-
-  Another way to customize the build is by overriding existing main targets.
-  The targets of interest are: 
-
-    -init-macrodef-javac:     defines macro for javac compilation
-    -init-macrodef-junit:     defines macro for junit execution
-    -init-macrodef-debug:     defines macro for class debugging
-    -init-macrodef-java:      defines macro for class execution
-    -do-jar:                  JAR building
-    run:                      execution of project 
-    -javadoc-build:           Javadoc generation
-    test-report:              JUnit report generation
-
-  An example of overriding the target for project execution could look like this:
-
-      <target name="run" depends="xbrl2rdf-impl.jar">
-          <exec dir="bin" executable="launcher.exe">
-              <arg file="${dist.jar}"/>
-          </exec>
-      </target>
-
-  Notice that the overridden target depends on the jar target and not only on 
-  the compile target as the regular run target does. Again, for a list of available 
-  properties which you can use, check the target you are overriding in the
-  nbproject/build-impl.xml file. 
-
-  -->
-
- </project>
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>

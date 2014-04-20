@@ -7,18 +7,18 @@
   <taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpathref="ivy.lib.path"/>
   <taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpathref="ivy.lib.path"/>
   <taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpathref="ivy.lib.path"/>
-  <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpathref="ivy.lib.path"/> 
+  <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpathref="ivy.lib.path"/>
   <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
 
   <!-- set global properties for this build -->
   <property name="main-class" value="cs.toronto.edu.secxbrl.Main"/>
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
-  <property name="dist"  location="dist"/>
-  <property name="lib" location="lib"/>
-  <property name="jar.file" value="${dist}/${ant.project.name}.jar"/>
+  <property name="src.dir" location="src"/>
+  <property name="build.dir" location="build"/>
+  <property name="dist.dir"  location="dist"/>
+  <property name="lib.dir" location="lib"/>
+  <property name="jar.file" value="${dist.dir}/${ant.project.name}.jar"/>
   <path id="lib.path">    
-      <fileset dir="${lib}">
+      <fileset dir="${lib.dir}">
           <include name="**/*.jar"/>
       </fileset>
   </path>
@@ -27,26 +27,25 @@
     <!-- Create the time stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-    <!-- <mkdir dir="${lib}" /> -->
+    <mkdir dir="${build.dir}"/>
+    <!-- <mkdir dir="${lib.dir}" /> -->
 
     <!-- Resolve dependencies -->
-    <ivy-retrieve pattern="${lib}/[artifact].[ext]" type="jar"/>
+    <ivy-retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar"/>
   </target>
 
-  <target name="compile" depends="init"
-        description="compile the source " >
+  <target name="compile" depends="init" description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" >
+    <javac srcdir="${src.dir}" destdir="${build.dir}" >
       <classpath refid="lib.path"/>
     </javac>
   </target>
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
-    <mkdir dir="${dist}"/>
-    <mkdir dir="${build}/lib"/>
-    <copy todir="${build}/lib" flatten="true">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${build.dir}/lib"/>
+    <copy todir="${build.dir}/lib" flatten="true">
       <path refid="lib.path" />
     </copy>
 
@@ -54,7 +53,7 @@
         <classpath refid="lib.path"/>
     </manifestclasspath>
 
-    <jar destfile="${jar.file}" basedir="${build}">
+    <jar destfile="${jar.file}" basedir="${build.dir}">
         <manifest>
             <attribute name="Main-Class" value="${main-class}"/>
             <attribute name="Class-Path" value="${manifest.classpath}"/>
@@ -62,10 +61,8 @@
     </jar>
   </target>
 
-  <target name="clean"
-        description="clean up" >
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
+  <target name="clean" description="clean up" >
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
   </target>
 </project>

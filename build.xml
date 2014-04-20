@@ -1,15 +1,36 @@
 <project name="secxbrl" default="dist" basedir=".">
 
-  <!-- Path to the directory of ivy library -->
-  <path id="ivy.lib.path">
-      <fileset dir="ivy" includes="*.jar"/>
-  </path>
-  <taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" classpathref="ivy.lib.path"/>
-  <taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" classpathref="ivy.lib.path"/>
-  <taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" classpathref="ivy.lib.path"/>
-  <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" classpathref="ivy.lib.path"/>
-  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+  <!-- Ivy related tasks -->
+  <property name="ivy.lib.dir" location="ivy" />
+  <property name="ivy.lib.version" value="2.3.0" />
+  <property name="ivy.jar.file" location="${ivy.lib.dir}/ivy-${ivy.lib.version}.jar" />
+  <target name="check-ivy" description="check if ivy library present ">
+    <available file="${ivy.jar.file}" property="ivy.lib.present"/>
+  </target>
+  <target name="download-ivy" depends="check-ivy" unless="ivy.lib.present" 
+      description="download ivy library">
+    <mkdir dir="${ivy.lib.dir}" />
+    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.lib.version}/ivy-${ivy.lib.version}.jar" 
+        dest="${ivy.jar.file}"/>
+  </target>
+  <!-- Just need to call this task during init -->
+  <target name="init-ivy" depends="download-ivy" description="initialize ivy tasks">
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.lib.dir}" includes="*.jar"/>
+    </path>
+    <taskdef name="ivy-configure" classname="org.apache.ivy.ant.IvyConfigure" 
+        classpathref="ivy.lib.path"/>
+    <taskdef name="ivy-resolve" classname="org.apache.ivy.ant.IvyResolve" 
+        classpathref="ivy.lib.path"/>
+    <taskdef name="ivy-retrieve" classname="org.apache.ivy.ant.IvyRetrieve" 
+        classpathref="ivy.lib.path"/>
+    <taskdef name="ivy-publish" classname="org.apache.ivy.ant.IvyPublish" 
+        classpathref="ivy.lib.path"/>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" 
+        classpathref="ivy.lib.path"/>
+  </target>
 
+  <!-- Project related task -->
   <!-- set global properties for this build -->
   <property name="main-class" value="cs.toronto.edu.secxbrl.Main"/>
   <property name="src.dir" location="src"/>
@@ -23,12 +44,12 @@
       </fileset>
   </path>
 
-  <target name="init">
+  <target name="init" depends="init-ivy">
     <!-- Create the time stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build.dir}"/>
-    <!-- <mkdir dir="${lib.dir}" /> -->
+    <mkdir dir="${lib.dir}" />
 
     <!-- Resolve dependencies -->
     <ivy-retrieve pattern="${lib.dir}/[artifact].[ext]" type="jar"/>
@@ -36,7 +57,7 @@
 
   <target name="compile" depends="init" description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src.dir}" destdir="${build.dir}" >
+    <javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
       <classpath refid="lib.path"/>
     </javac>
   </target>
